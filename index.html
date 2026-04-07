@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医院财务数据分析仪</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+         
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+         
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+         
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+         
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+         
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+         
+        .demo-badge {
+            background: #f39c12;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: inline-block;
+        }
+         
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+         
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+         
+        .tab:hover {
+            background: #e9ecef;
+        }
+         
+        .tab.active {
+            background: white;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+        }
+         
+        .content {
+            padding: 30px;
+        }
+         
+        .tab-content {
+            display: none;
+        }
+         
+        .tab-content.active {
+            display: block;
+        }
+         
+        .data-input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+         
+        .data-input-section h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+         
+        .form-group {
+            margin-bottom: 20px;
+        }
+         
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #495057;
+        }
+         
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+         
+        .form-col {
+            flex: 1;
+        }
+         
+        select, input[type="date"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+         
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            resize: vertical;
+        }
+         
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+         
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+         
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+         
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+         
+        .btn-success:hover {
+            background: #218838;
+        }
+         
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+         
+        .btn-info:hover {
+            background: #138496;
+        }
+         
+        .analysis-section {
+            margin-top: 30px;
+        }
+         
+        .analysis-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+         
+        .analysis-card h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+         
+        .analysis-card h4 {
+            margin: 20px 0 15px;
+            color: #495057;
+        }
+         
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+         
+        th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+         
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+         
+        .indicator-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+         
+        .indicator-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+         
+        .change-positive {
+            color: #28a745;
+            font-weight: 600;
+        }
+         
+        .change-negative {
+            color: #dc3545;
+            font-weight: 600;
+        }
+         
+        .chart-container {
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px 0;
+            padding: 20px;
+        }
+         
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+         
+        .comparison-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+         
+        .comparison-card h4 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+         
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+         
+        .metric:last-child {
+            border-bottom: none;
+        }
+         
+        .metric-name {
+            font-weight: 500;
+        }
+         
+        .metric-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+         
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+         
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+         
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+         
+        .report-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+         
+        .report-section h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+         
+        .report-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+         
+        .report-content h4 {
+            margin: 20px 0 10px;
+            color: #495057;
+        }
+         
+        .report-content p {
+            margin-bottom: 15px;
+        }
+         
+        .dropZone {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+         
+        .dropZone:hover {
+            border-color: #2980b9;
+            background: #e3f2fd;
+        }
+         
+        .importStatus {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+         
+        .score-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+         
+        .score-value {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+         
+        .score-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+         
+        .score-excellent { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }
+        .score-good { background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%); }
+        .score-average { background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); }
+        .score-poor { background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); }
+         
+        .indicator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+         
+        .indicator-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+         
+        .indicator-item.warning {
+            border-left-color: #ffc107;
+        }
+         
+        .indicator-item.danger {
+            border-left-color: #dc3545;
+        }
+         
+        .indicator-item.success {
+            border-left-color: #28a745;
+        }
+         
+        .indicator-item h5 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+         
+        .indicator-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+        }
+         
+        .indicator-item .trend {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+         
+        .indicator-item .status {
+            font-size: 11px;
+            margin-top: 5px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            font-weight: 500;
+        }
+         
+        .status-healthy {
+            background: #d4edda;
+            color: #155724;
+        }
+         
+        .status-normal {
+            background: #fff3cd;
+            color: #856404;
+        }
+         
+        .status-risk {
+            background: #f8d7da;
+            color: #721c24;
+        }
+         
+        .indicator-standards {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+         
+        .indicator-standards h4 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+         
+        .standards-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+         
+        .standards-table th {
+            background: #e9ecef;
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+         
+        .standards-table td {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            text-align: center;
+        }
+         
+        .standards-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+         
+        .range-healthy {
+            color: #28a745;
+            font-weight: 600;
+        }
+         
+        .range-normal {
+            color: #ffc107;
+            font-weight: 600;
+        }
+         
+        .range-risk {
+            color: #dc3545;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 医院财务数据分析仪 - 示例展示</h1>
+            <p>Financial Data Analyzer for Hospitals - Demo Version</p>
+            <div class="demo-badge">📊 示例数据展示</div>
+        </div>
+         
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('input')">📥 数据输入</button>
+            <button class="tab" onclick="switchTab('analysis')">📊 数据分析</button>
+            <button class="tab" onclick="switchTab('comparison')">📈 对比分析</button>
+            <button class="tab" onclick="switchTab('report')">📋 分析报告</button>
+        </div>
+         
+        <div class="content">
+            <!-- 数据输入标签页 -->
+            <div id="input-tab" class="tab-content active">
+                <div class="data-input-section">
+                    <h3>📂 上传财务报告文件</h3>
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="hospitalNameUpload">医院名称：</label>
+                                    <input type="text" id="hospitalNameUpload" name="hospitalName" required value="示例医院">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="reportDateUpload">报告年月：</label>
+                                    <input type="date" id="reportDateUpload" name="reportDate" required value="2024-03-01">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fileUpload">选择文件 (推荐使用CSV格式):</label>
+                            <input type="file" id="fileUpload" name="file" required accept=".csv,.txt,.xlsx">
+                        </div>
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button type="submit" class="btn btn-success">上传数据</button>
+                        </div>
+                    </form>
+                    <div id="uploadStatus" class="importStatus"></div>
+                </div>
+            </div>
+             
+            <!-- 数据分析标签页 -->
+            <div id="analysis-tab" class="tab-content">
+                <div class="data-input-section">
+                    <h3>🔍 选择分析范围</h3>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="analysisHospitalName">选择医院:</label>
+                                <select id="analysisHospitalName"></select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="analysisStartDate">开始年月:</label>
+                                <input type="date" id="analysisStartDate" value="2024-01-01">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="analysisEndDate">结束年月:</label>
+                                <input type="date" id="analysisEndDate" value="2024-03-01">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn btn-success" onclick="runFullAnalysis()">开始分析</button>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <h3>📊 本月财务指标分析</h3>
+                    <div id="currentAnalysis"></div>
+                </div>
+            </div>
+             
+            <!-- 对比分析标签页 -->
+            <div id="comparison-tab" class="tab-content">
+                <div class="analysis-card">
+                    <h3>📈 环比分析（与上月对比）</h3>
+                    <div id="monthlyComparison"></div>
+                </div>
+                 
+                <div class="analysis-card">
+                    <h3>📈 同比分析（与去年同期对比）</h3>
+                    <div id="yearlyComparison"></div>
+                </div>
+                 
+                <div class="analysis-card">
+                    <h3>📊 横向对比分析</h3>
+                    <div id="horizontalComparison"></div>
+                </div>
+            </div>
+             
+            <!-- 分析报告标签页 -->
+            <div id="report-tab" class="tab-content">
+                <div class="report-section">
+                    <h3>📋 财务分析报告</h3>
+                    <div id="analysisReport"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+     
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchTab('${tabName}')"`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        // Helper function to parse CSV-like textarea data
+        function parseData(textareaId) {
+            const data = document.getElementById(textareaId).value.trim();
+            if (!data) return [];
+            return data.split('\n').map(row => row.split(','));
+        }
+
+        // Function to collect all financial data from the form
+        function collectAllFinancialData() {
+            const hospitalName = document.getElementById('hospitalName').value;
+            const currentMonth = document.getElementById('currentMonth').value;
+
+            return {
+                hospitalName: hospitalName,
+                reportMonth: currentMonth,
+                balanceSheet: parseData('balanceSheet'),
+                incomeStatement: parseData('incomeStatement'),
+                cashFlow: parseData('cashFlow'),
+                equityChange: parseData('equityChange'),
+                medicalIncome: parseData('medicalIncome'),
+                medicalCost: parseData('medicalCost'),
+                expenseDetail: parseData('expenseDetail'),
+                assetDetail: parseData('assetDetail'),
+                liabilityDetail: parseData('liabilityDetail'),
+                operationIndex: parseData('operationIndex')
+            };
+        }
+
+        async function runFullAnalysis() {
+            const hospitalName = document.getElementById('analysisHospitalName').value;
+            const startDate = document.getElementById('analysisStartDate').value;
+            const endDate = document.getElementById('analysisEndDate').value;
+
+            if (!hospitalName) {
+                alert("请先选择一个医院。");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/data?hospitalName=${encodeURIComponent(hospitalName)}&startDate=${startDate}&endDate=${endDate}`);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to fetch data: ${errorText}`);
+                }
+                const financialData = await response.json();
+
+                // For now, we are not parsing the file content in the frontend.
+                // We pass the raw content to the analysis functions.
+                // The LLM is expected to understand the CSV-like content.
+                const dataForLlm = {
+                    hospitalName: hospitalName,
+                    reportMonth: endDate, // Use the end date as the primary report month
+                    ...financialData
+                };
+
+                // Now, run the analyses with the fetched data
+                await generateAnalysisResults(dataForLlm);
+                await generateComparisonResults(dataForLlm);
+                await generateReport(dataForLlm);
+
+            } catch (error) {
+                console.error("An error occurred during analysis:", error);
+                alert(`分析过程中出现错误: ${error.message}`);
+            }
+        }
+
+        // Placeholder for actual data parsing and analysis logic
+        async function parseAndAnalyze() {
+            // This function would typically parse all input data
+            // and then call functions to generate analysis results.
+            console.log("Parsing data and starting analysis...");
+            const allFinancialData = collectAllFinancialData();
+            await generateAnalysisResults(allFinancialData);
+            await generateComparisonResults(allFinancialData);
+            await generateReport(allFinancialData);
+            switchTab('analysis'); // Switch to analysis tab after processing
+        }
+
+        function loadSampleData() {
+            document.getElementById('currentMonth').value = "2024-03-01";
+            document.getElementById('hospitalName').value = "示例医院";
+            document.getElementById('balanceSheet').value = `货币资金,1000000,950000,900000
+应收账款,500000,480000,450000
+存货,300000,290000,280000
+流动资产合计,1800000,1720000,1630000
+固定资产,1200000,1200000,1200000
+资产总计,3000000,2920000,2830000
+应付账款,400000,380000,360000
+流动负债合计,600000,580000,560000
+负债合计,800000,780000,760000
+所有者权益合计,2200000,2140000,2070000
+负债和所有者权益总计,3000000,2920000,2830000`;
+            document.getElementById('incomeStatement').value = `主营业务收入,500000,480000,450000
+主营业务成本,300000,290000,280000
+营业利润,150000,145000,135000
+利润总额,140000,135000,125000
+净利润,105000,101250,93750`;
+            document.getElementById('cashFlow').value = `经营活动现金流入,550000,530000,500000
+经营活动现金流出,450000,440000,420000
+经营活动现金流量净额,100000,90000,80000
+投资活动现金流量净额,-50000,-45000,-40000
+筹资活动现金流量净额,-20000,-18000,-15000
+现金及现金等价物净增加额,30000,27000,25000`;
+            document.getElementById('equityChange').value = `期初余额,2140000,2085000,2000000
+本期净利润,105000,101250,93750
+期末余额,2200000,2140000,2070000`;
+            document.getElementById('medicalIncome').value = `门诊收入,200000,190000,180000
+住院收入,300000,290000,270000`;
+            document.getElementById('medicalCost').value = `药品成本,150000,145000,140000
+卫生材料成本,100000,95000,90000
+人力成本,50000,48000,45000`;
+            document.getElementById('expenseDetail').value = `管理费用,30000,29000,28000
+销售费用,10000,9500,9000
+财务费用,5000,4800,4500`;
+            document.getElementById('assetDetail').value = `流动资产,1800000,1720000,1630000
+固定资产,1200000,1200000,1200000`;
+            document.getElementById('liabilityDetail').value = `流动负债,600000,580000,560000
+非流动负债,200000,200000,200000`;
+            document.getElementById('operationIndex').value = `门诊量,1000,950,900
+住院量,500,480,450
+平均住院日,8,8.2,8.5
+床位使用率,85,84,83`;
+            
+            const statusElement = document.getElementById('importStatus');
+            statusElement.style.display = 'block';
+            statusElement.style.background = '#e8f5e8';
+            statusElement.style.color = '#2e7d32';
+            statusElement.innerHTML = '<strong>示例数据已重置！</strong> 点击"开始分析"查看分析结果。';
+        }
+        
+        async function callLLMAPI(promptContent) {
+            const LLM_API_ENDPOINT = "/api/llm"; // This now points to our local proxy server
+
+            try {
+                const response = await fetch(LLM_API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ promptContent: promptContent })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorMessage = `API request failed: ${response.status}`;
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        errorMessage += ` - ${errorJson.error.message || errorJson.error || errorText}`;
+                    } catch (e) {
+                        errorMessage += ` - ${errorText}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const data = await response.json();
+                // The proxy now returns the direct JSON from OpenAI, so we can parse the content
+                const content = data.choices[0].message.content;
+                let llmResponse;
+                try {
+                    llmResponse = JSON.parse(content);
+                } catch (parseError) {
+                    console.error("Failed to parse LLM response content as JSON:", content, parseError);
+                    throw new Error("LLM Response JSON Parse Error");
+                }
+                return llmResponse;
+
+            } catch (error) {
+                console.error("Error calling LLM API:", error);
+                throw new Error(`LLM API Call Failed: ${error.message}`);
+            }
+        }
+
+        async function generateAnalysisResults(allFinancialData) {
+            const currentAnalysisDiv = document.getElementById('currentAnalysis');
+            currentAnalysisDiv.innerHTML = '<div class="loading-spinner"></div><p>正在生成数据分析报告，请稍候...</p>'; // Loading state
+
+            const promptForAnalysis = `
+                你是一名资深的中国医院财务分析专家。请根据以下医院的财务数据，出具一份专业的“本月财务指标分析”报告。
+                报告应侧重于中国医院财务管理的特点，提供对医院当前财务状况的全面解读。
+                报告内容需包括但不限于：
+                1. 医院名称和报告月份。
+                2. 主要财务指标概览（如盈利能力、偿债能力、运营效率等关键指标的现状）。
+                3. 盈利能力分析（结合医疗收入、成本结构，分析医院的盈利能力及可持续性）。
+                4. 偿债能力分析（评估短期和长期偿债风险）。
+                5. 运营效率分析（结合门诊量、住院量、平均住院日、床位使用率等运营指标，分析医院的运营效率）。
+                6. 资产质量分析（分析资产结构和质量）。
+                7. 风险提示与建议（提出潜在财务风险并给出具体改进建议）。
+                请严格以JSON格式返回，包含以下字段：
+                {
+                    "hospitalName": "string",
+                    "reportMonth": "string",
+                    "overview": "string",
+                    "profitabilityAnalysis": "string",
+                    "solvencyAnalysis": "string",
+                    "operationalEfficiencyAnalysis": "string",
+                    "assetQualityAnalysis": "string",
+                    "risksAndRecommendations": "string"
+                }
+                确保返回的JSON是完整的，并且每个字段的内容都是详细且专业的中文分析文本。
+                医院财务数据如下：
+                ${JSON.stringify(allFinancialData, null, 2)}
+            `;
+
+            try {
+                const llmResponse = await callLLMAPI(promptForAnalysis);
+
+                if (!llmResponse) {
+                    throw new Error("LLM returned an empty response.");
+                }
+
+                currentAnalysisDiv.innerHTML = `
+                    <div class="analysis-card">
+                        <h3>${llmResponse.hospitalName} - ${llmResponse.reportMonth} 本月财务指标分析</h3>
+                        <h4>主要财务指标概览</h4>
+                        <p>${llmResponse.overview}</p>
+                        <h4>盈利能力分析</h4>
+                        <p>${llmResponse.profitabilityAnalysis}</p>
+                        <h4>偿债能力分析</h4>
+                        <p>${llmResponse.solvencyAnalysis}</p>
+                        <h4>运营效率分析</h4>
+                        <p>${llmResponse.operationalEfficiencyAnalysis}</p>
+                        <h4>资产质量分析</h4>
+                        <p>${llmResponse.assetQualityAnalysis}</p>
+                        <h4>风险提示与建议</h4>
+                        <p>${llmResponse.risksAndRecommendations}</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error("生成数据分析报告失败:", error);
+                currentAnalysisDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>错误:</strong> 生成数据分析报告失败。原因: ${error.message}。请检查API密钥和网络连接，或重试。
+                    </div>
+                `;
+            }
+        }
+        
+        async function generateComparisonResults(allFinancialData) {
+            const monthlyComparisonDiv = document.getElementById('monthlyComparison');
+            const yearlyComparisonDiv = document.getElementById('yearlyComparison');
+            const horizontalComparisonDiv = document.getElementById('horizontalComparison');
+
+            monthlyComparisonDiv.innerHTML = '<p>正在生成环比分析，请稍候...</p>';
+            yearlyComparisonDiv.innerHTML = '<p>正在生成同比分析，请稍候...</p>';
+            horizontalComparisonDiv.innerHTML = '<p>正在生成横向对比分析，请稍候...</p>';
+
+            const promptForComparison = `
+                你是一名资深的中国医院财务分析专家。请根据以下医院的财务数据，出具一份专业的“对比分析”报告。
+                报告应侧重于中国医院财务管理的特点，提供对医院财务状况的全面对比解读。
+                报告内容需包括：
+                1.  环比分析（与上月对比）：
+                    - 至少对比3-5个关键财务指标（如资产负债率、流动比率、净利润、主营业务收入、门诊量等）。
+                    - 对每个指标，说明本月、上月数值，以及环比变化（绝对值和百分比）。
+                    - 对整体环比变化进行总结和评论。
+                2.  同比分析（与去年同期对比）：
+                    - 至少对比3-5个关键财务指标（选择与环比分析不同的指标，或从不同角度进行）。
+                    - 对每个指标，说明本月、去年同期数值，以及同比增长（绝对值和百分比）。
+                    - 对整体同比增长进行总结和评论。
+                3.  横向对比分析（与同级医院平均水平对比，假设平均水平如下，你可以根据数据自行调整）：
+                    - 至少对比3-5个关键运营或财务指标。
+                    - 对每个指标，说明本院数值、假设的同级医院平均值、以及本院与平均水平的对比评级（如“优于平均”、“略低于平均”、“持平”等）。
+                    - 对整体横向对比情况进行总结和评论。
+
+                请严格以JSON格式返回，包含以下字段：
+                {
+                    "monthlyComparison": [
+                        {"metric": "string", "thisMonth": "string", "lastMonth": "string", "change": "string", "comment": "string"}
+                    ],
+                    "yearlyComparison": [
+                        {"metric": "string", "thisMonth": "string", "lastMonthYear": "string", "change": "string", "comment": "string"}
+                    ],
+                    "horizontalComparison": [
+                        {"metric": "string", "hospitalValue": "string", "peerAverage": "string", "rating": "string", "comment": "string"}
+                    ]
+                }
+                确保返回的JSON是完整的，并且每个字段的内容都是详细且专业的中文分析文本。
+                医院财务数据如下：
+                ${JSON.stringify(allFinancialData, null, 2)}
+            `;
+
+            try {
+                const llmResponse = await callLLMAPI(promptForComparison);
+
+                if (!llmResponse) {
+                    throw new Error("LLM returned an empty response.");
+                }
+
+                // Render Monthly Comparison
+                let monthlyHtml = '<h4>月度关键指标变化</h4><div class="comparison-grid">';
+                llmResponse.monthlyComparison.forEach(item => {
+                    monthlyHtml += `
+                        <div class="comparison-card">
+                            <h4>${item.metric}</h4>
+                            <div class="metric">
+                                <span class="metric-name">本月</span>
+                                <span class="metric-value">${item.thisMonth}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-name">上月</span>
+                                <span class="metric-value">${item.lastMonth}</span>
+                            </div>
+                            <div class="metric ${item.change.includes('↑') ? 'change-positive' : (item.change.includes('↓') ? 'change-negative' : '')}">
+                                <span class="metric-name">环比变化</span>
+                                <span class="metric-value">${item.change}</span>
+                            </div>
+                            <div class="alert alert-info" style="margin-top: 10px;">
+                                <strong>评论:</strong> ${item.comment}
+                            </div>
+                        </div>
+                    `;
+                });
+                monthlyHtml += '</div>';
+                monthlyComparisonDiv.innerHTML = monthlyHtml;
+
+
+                // Render Yearly Comparison
+                let yearlyHtml = '<h4>年度关键指标变化</h4><div class="comparison-grid">';
+                llmResponse.yearlyComparison.forEach(item => {
+                    yearlyHtml += `
+                        <div class="comparison-card">
+                            <h4>${item.metric}</h4>
+                            <div class="metric">
+                                <span class="metric-name">本月</span>
+                                <span class="metric-value">${item.thisMonth}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-name">去年同期</span>
+                                <span class="metric-value">${item.lastMonthYear}</span>
+                            </div>
+                            <div class="metric ${item.change.includes('↑') ? 'change-positive' : (item.change.includes('↓') ? 'change-negative' : '')}">
+                                <span class="metric-name">同比增长</span>
+                                <span class="metric-value">${item.change}</span>
+                            </div>
+                            <div class="alert alert-success" style="margin-top: 10px;">
+                                <strong>评论:</strong> ${item.comment}
+                            </div>
+                        </div>
+                    `;
+                });
+                yearlyHtml += '</div>';
+                yearlyComparisonDiv.innerHTML = yearlyHtml;
+
+                // Render Horizontal Comparison
+                let horizontalHtml = '<h4>同级医院平均水平对比</h4><div class="standards-table"><table><thead><tr><th>指标名称</th><th>本院数值</th><th>同级医院平均</th><th>评级</th><th>评论</th></tr></thead><tbody>';
+                llmResponse.horizontalComparison.forEach(item => {
+                    let ratingClass = '';
+                    if (item.rating.includes('优于')) ratingClass = 'range-healthy';
+                    else if (item.rating.includes('略低于') || item.rating.includes('风险')) ratingClass = 'range-risk';
+                    else if (item.rating.includes('持平')) ratingClass = 'range-normal';
+
+                    horizontalHtml += `
+                        <tr>
+                            <td>${item.metric}</td>
+                            <td>${item.hospitalValue}</td>
+                            <td>${item.peerAverage}</td>
+                            <td class="${ratingClass}">${item.rating}</td>
+                            <td>${item.comment}</td>
+                        </tr>
+                    `;
+                });
+                horizontalHtml += '</tbody></table></div>';
+                horizontalComparisonDiv.innerHTML = horizontalHtml;
+
+            } catch (error) {
+                console.error("生成对比分析报告失败:", error);
+                const errorMessage = `<div class="alert alert-danger"><strong>错误:</strong> 生成对比分析报告失败。原因: ${error.message}。请检查API密钥和网络连接，或重试。</div>`;
+                monthlyComparisonDiv.innerHTML = errorMessage;
+                yearlyComparisonDiv.innerHTML = errorMessage;
+                horizontalComparisonDiv.innerHTML = errorMessage;
+            }
+        }
+
+        async function generateReport(allFinancialData) {
+            const analysisReport = document.getElementById('analysisReport');
+            analysisReport.innerHTML = '<div class="loading-spinner"></div><p>正在生成最终分析报告，请稍候...</p>'; // Loading state
+
+            const promptForReport = `
+                你是一名资深的中国医院财务分析专家。请根据以下医院的财务数据，出具一份专业、全面、深入的“医院财务分析报告”。
+                报告应站在医院管理层的角度，提供决策支持，并严格符合中国医院财务管理的特点和要求。
+                报告内容需包括但不限于以下几个部分，并确保每个部分都有详细的专业分析：
+
+                1.  **执行摘要 (Executive Summary)**: 简要总结本期医院的整体财务表现、主要亮点、存在问题和关键建议。
+                2.  **综合财务表现分析 (Comprehensive Financial Performance Analysis)**:
+                    *   **盈利能力**: 结合收入结构、成本费用、利润指标（如净利润率、毛利率），分析医院的盈利能力及构成。
+                    *   **偿债能力**: 分析短期（流动比率、速动比率）和长期（资产负债率）偿债能力，评估财务风险。
+                    *   **运营效率**: 结合收入周转率、资产周转率、应收账款周转天数、存货周转天数等，分析资产利用效率和运营效率。
+                3.  **主要业务指标分析 (Key Operational Indicators Analysis)**:
+                    *   结合门诊量、住院量、平均住院日、床位使用率等运营数据，分析业务发展趋势及对财务的影响。
+                4.  **成本费用结构分析 (Cost and Expense Structure Analysis)**:
+                    *   分析医疗成本、管理费用、销售费用等构成及变化，识别成本控制的关键领域。
+                5.  **资金流动性分析 (Cash Flow Analysis)**:
+                    *   分析经营活动、投资活动和筹资活动现金流量，评估医院的现金生成能力和资金周转状况。
+                6.  **风险评估与预警 (Risk Assessment and Early Warning)**:
+                    *   识别潜在的财务风险（如高应收账款风险、资金周转压力、成本失控风险等），并提供预警。
+                7.  **战略建议 (Strategic Recommendations)**:
+                    *   基于以上分析，为医院未来的财务管理和运营提供具体的、可操作的战略建议和改进措施。
+
+                请严格以JSON格式返回，包含以下字段：
+                {
+                    "reportTitle": "string",
+                    "executiveSummary": "string",
+                    "comprehensiveFinancialPerformanceAnalysis": {
+                        "profitability": "string",
+                        "solvency": "string",
+                        "operationalEfficiency": "string"
+                    },
+                    "keyOperationalIndicatorsAnalysis": "string",
+                    "costAndExpenseStructureAnalysis": "string",
+                    "cashFlowAnalysis": "string",
+                    "riskAssessmentAndEarlyWarning": "string",
+                    "strategicRecommendations": "string"
+                }
+                确保返回的JSON是完整的，并且每个字段的内容都是详细且专业的中文分析文本。
+                医院财务数据如下：
+                ${JSON.stringify(allFinancialData, null, 2)}
+            `;
+
+            try {
+                const llmResponse = await callLLMAPI(promptForReport);
+
+                if (!llmResponse) {
+                    throw new Error("LLM returned an empty response.");
+                }
+
+                analysisReport.innerHTML = `
+                    <div class="analysis-card">
+                        <h3>${llmResponse.reportTitle}</h3>
+                        <h4>执行摘要</h4>
+                        <p>${llmResponse.executiveSummary}</p>
+                        <h4>综合财务表现分析</h4>
+                        <h5>盈利能力</h5>
+                        <p>${llmResponse.comprehensiveFinancialPerformanceAnalysis.profitability}</p>
+                        <h5>偿债能力</h5>
+                        <p>${llmResponse.comprehensiveFinancialPerformanceAnalysis.solvency}</p>
+                        <h5>运营效率</h5>
+                        <p>${llmResponse.comprehensiveFinancialPerformanceAnalysis.operationalEfficiency}</p>
+                        <h4>主要业务指标分析</h4>
+                        <p>${llmResponse.keyOperationalIndicatorsAnalysis}</p>
+                        <h4>成本费用结构分析</h4>
+                        <p>${llmResponse.costAndExpenseStructureAnalysis}</p>
+                        <h4>资金流动性分析</h4>
+                        <p>${llmResponse.cashFlowAnalysis}</p>
+                        <h4>风险评估与预警</h4>
+                        <p>${llmResponse.riskAssessmentAndEarlyWarning}</p>
+                        <h4>战略建议</h4>
+                        <p>${llmResponse.strategicRecommendations}</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error("生成分析报告失败:", error);
+                analysisReport.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>错误:</strong> 生成分析报告失败。原因: ${error.message}。请检查API密钥和网络连接，或重试。
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadForm = document.getElementById('uploadForm');
+            const uploadStatus = document.getElementById('uploadStatus');
+
+            uploadForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const formData = new FormData(uploadForm);
+                
+                uploadStatus.style.display = 'block';
+                uploadStatus.style.background = '#d1ecf1';
+                uploadStatus.style.color = '#0c5460';
+                uploadStatus.innerHTML = '正在上传并处理文件，请稍候...';
+
+                try {
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.error || 'Upload failed');
+                    }
+
+                    uploadStatus.style.background = '#d4edda';
+                    uploadStatus.style.color = '#155724';
+                    uploadStatus.innerHTML = `<strong>成功:</strong> ${result.message}`;
+                    uploadForm.reset();
+
+                } catch (error) {
+                    uploadStatus.style.background = '#f8d7da';
+                    uploadStatus.style.color = '#721c24';
+                    uploadStatus.innerHTML = `<strong>错误:</strong> ${error.message}`;
+                }
+            });
+
+            // Function to fetch the list of hospitals and populate the dropdown
+            async function populateHospitals() {
+                try {
+                    const response = await fetch('/api/hospitals');
+                    const hospitals = await response.json();
+                    const selectElement = document.getElementById('analysisHospitalName');
+                    selectElement.innerHTML = ''; // Clear existing options
+                    hospitals.forEach(hospital => {
+                        const option = document.createElement('option');
+                        option.value = hospital;
+                        option.textContent = hospital;
+                        selectElement.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error("Failed to fetch hospitals:", error);
+                }
+            }
+
+            // Populate hospitals when the analysis tab is clicked
+            document.querySelector('.tab[onclick="switchTab(\'analysis\')"]').addEventListener('click', populateHospitals);
+
+            // Initial population in case the user is already on the tab
+            if (document.getElementById('analysis-tab').classList.contains('active')) {
+                populateHospitals();
+            }
+
+            // Keep the original logic for tab switching
+            switchTab('input');
+        });
+    </script>
+</body>
+</html>
