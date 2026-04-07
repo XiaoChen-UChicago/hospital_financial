@@ -3,6 +3,7 @@ import sqlite3
 import json
 import urllib.request
 import os
+import pandas as pd
 from flask import Flask, request, jsonify, send_from_directory
 
 # --- Configuration ---
@@ -93,19 +94,32 @@ def handle_upload_request():
             return jsonify({"error": "Missing form data (hospitalName or reportDate)"}), 400
 
         print(f"Processing upload for {hospital_name} on {report_date} with file {uploaded_file.filename}")
-        raw_bytes = uploaded_file.read()
+
         file_content = None
-        try:
-            file_content = raw_bytes.decode('utf-8')
-            print("File decoded successfully as UTF-8.")
-        except UnicodeDecodeError:
-            print("UTF-8 decoding failed. Trying GBK...")
+        if uploaded_file.filename.endswith('.xlsx'):
             try:
-                file_content = raw_bytes.decode('gbk')
-                print("File decoded successfully as GBK.")
+                # Use pandas to read the xlsx file
+                df = pd.read_excel(uploaded_file)
+                # Convert the dataframe to a CSV string
+                file_content = df.to_csv(index=False, header=False)
+                print("Excel file successfully converted to CSV string.")
+            except Exception as e:
+                print(f"Error processing .xlsx file: {e}")
+                return jsonify({"error": f"Failed to process Excel file: {e}"}), 400
+        else:
+            # Handle plain text files (like .csv, .txt)
+            raw_bytes = uploaded_file.read()
+            try:
+                file_content = raw_bytes.decode('utf-8')
+                print("Text file decoded successfully as UTF-8.")
             except UnicodeDecodeError:
-                print("GBK decoding also failed. Returning error.")
-                return jsonify({"error": "Unsupported file encoding. Please save the file as UTF-8 or GBK and re-upload."}), 400
+                print("UTF-8 decoding failed. Trying GBK...")
+                try:
+                    file_content = raw_bytes.decode('gbk')
+                    print("Text file decoded successfully as GBK.")
+                except UnicodeDecodeError:
+                    print("GBK decoding also failed. Returning error.")
+                    return jsonify({"error": "Unsupported text file encoding. Please use UTF-8 or GBK."}), 400
 
         if file_content is None:
             print("Error: File content is None after decoding attempts.")
